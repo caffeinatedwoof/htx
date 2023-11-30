@@ -127,3 +127,97 @@ This command sends the MP3 file to the ASR service, which processes the file, re
 Notes:
 - After spinning up the Docker container, it takes about a minute to download the model and processor before the app is ready for transcription requests.
 - The app creates a copy of the uploaded file in a temporary location on your server and then deletes that copy after processing. This ensures that no residual data remains on the server after the file is processed, ensuring data privacy and server resource management.
+
+## Task 4
+
+This section outlines the implementation details of an Elasticsearch cluster, as per the provided task instructions.
+
+#### Folder Structure
+
+- `elastic-backend/`: This directory contains all the code for the task.
+  - `docker-compose.yml`: Configuration for setting up a 2-node Elasticsearch cluster using Docker, specifying environment variables, network settings, and resource limits.
+  - `cv-index.py`: Script to index `cs-valid-dev.csv` into the elasticsearch service
+
+#### Docker-compose Configuration
+
+- Elasticsearch Cluster Setup: Configured a 2-node Elasticsearch cluster using Docker.
+- Container Names: Defined as elasticsearch1 and elasticsearch2.
+- Volume Management: Specified esdata01 and esdata02 for persistent data storage.
+- Port Configuration: Exposed Elasticsearch on the specified port ${ES_PORT}. (9200 for this assignment)
+- Environment Variables: Set up necessary environment variables for node configuration, cluster setup, and CORS settings.
+- Network Setup: Utilized a bridge network esnet for inter-container communication.
+- Resource Limits: Applied memory limits and ulimit settings to manage resource usage.
+- Health Checks: Included health checks to ensure the Elasticsearch service is running properly.
+
+Notes:
+- CORS (Cross-Origin Resource Sharing) Settings
+
+   These CORS settings facilitate the communication between the Elasticsearch backend and the SearchUI frontend, ensuring that the browser's same-origin policy doesn't block the requests from the frontend to the Elasticsearch service.
+
+- Using HTTP Instead of HTTPS
+
+   Since this is for technical assessment, and not a production set-up, we focus on the functionality of the application rather than the security aspects. The configuration uses HTTP (with security.enabled=false) instead of HTTPS for simplicity and ease of set-up. It avoids the complexity of generating, managing, and configuring SSL/TLS certificates. However, we would definitely need to use HTTPS with proper security configurations for a production setup.
+
+
+#### Elasticsearch Service Setup
+Follow these instructions to spin up the Elasticsearch service using Docker Compose.
+
+1. **Prerequisites**
+
+- Docker and Docker Compose installed on your system.
+- `.env` file with necessary environment variables (`ES_PORT`, `ELASTIC_PASSWORD`, `MEM_LIMIT`).
+
+Note: For the purpose of this technical test, a sample `.env` file is included in the `elastic-backend` directory. This file is provided solely to demonstrate the setup process and facilitate ease of evaluation by the hiring panel.
+
+2. **Navigate to the Directory**
+
+   Change to the `elastic-backend` directory.
+   ```bash
+   cd elastic-backend
+   ```
+
+3. **Launch Elasticsearch Service**
+
+   Run the following command to start the Elasticsearch cluster.
+   ```bash
+   docker-compose up -d
+   ```
+   This command will start the Elasticsearch nodes as defined in docker-compose.yml.
+
+4. **Verify the Service**
+
+   Check if the Elasticsearch nodes are running correctly.
+   ```bash
+   docker-compose ps
+   ```
+
+5. **Access Elasticsearch**
+
+   Access the Elasticsearch service by visiting http://localhost:<ES_PORT>, where <ES_PORT> is the port number specified in your .env file.
+
+6. **Stopping the Service**
+
+   To stop the Elasticsearch service, use:
+   ```bash
+   docker-compose down
+   ```
+
+#### Running the 'cv-index.py' Script
+
+1. **Prerequisites**
+
+   Ensure Elasticsearch service is up and running as per the previous setup instructions.
+
+2. **Environment Configuration**
+
+   Make sure the `.env` file is correctly set up in the `elastic-backend` directory with all required environment variables (`ELASTIC_PASSWORD`, `HOST`, `FILEPATH`)
+
+3. **Navigate to the Script Directory**
+   Change to the directory containing `cv-index.py`.
+   ```bash
+   cd elastic-backend
+4. **Run the script**
+   ```bash
+   python cv-index.py
+   ```
+   This command will start the process of reading the cs-valid-dev.csv file and indexing its content into the Elasticsearch service.
