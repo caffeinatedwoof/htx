@@ -221,3 +221,75 @@ Note: For the purpose of this technical test, a sample `.env` file is included i
    python cv-index.py
    ```
    This command will start the process of reading the cs-valid-dev.csv file and indexing its content into the Elasticsearch service.
+
+## Task 5
+
+This section describes how to set up the Search UI for the Elasticsearch service to enable searching through indexed documents using various fields like `generated_text`, `duration`, `age`, `gender`, and `accent`.
+
+#### Folder Structure
+
+- `search-ui/`: This directory contains all the code and configurations for the Search UI application.
+  - `public/`: Holds static files such as index.html and the assets used by the web application.
+  - `src/`: Source directory containing React components, styles, and tests, including:
+    - `App.css`: Stylesheet for the main App component.
+    - `App.js`: The main React component that wraps the entire application.
+    - `index.css`: Global stylesheet for the web application.
+    - `index.js`: JavaScript entry point for React, where the App component is rendered.
+    - `SearchPage.js`: React component for the search page functionality.
+    - `searchStyles.css`: Stylesheet for the search page.
+  - `docker-compose.yml:` Docker Compose configuration file to define and run multi-container Docker applications.
+  - `package-lock.json:` Automatically generated file to lock down the versions of a package's dependencies.
+  - `package.json:` Defines the project dependencies and metadata.
+
+**Node.js Environment Setup**
+
+To set up the Node.js environment, follow these steps:
+
+1. **Install Node.js and npm**:
+   - Download and install Node.js from the [official website](https://nodejs.org/).
+   - npm is included with Node.js, so you'll have it once Node.js is installed.
+
+2. **Verify Installation**:
+   Verify that Node.js and npm are installed by running the following commands in your terminal:
+   ```bash
+   node --version
+   npm --version
+   ```
+
+3. **Install Project Dependencies**
+   Navigate to the search-ui directory and run the following command to install all the necessary dependencies:
+   ```bash
+   npm install
+   ```
+   This will read the package.json file and install all the required packages listed under dependencies and devDependencies.
+
+#### Search-UI Service Setup
+
+1. **Prerequisites**
+
+- Docker and Docker Compose are installed on your system
+- The Elasticsearch service is running and accessible at `http://localhost:9200/`
+- Data has been indexed using the 'cv-index.py' script
+- Node.js environment for running the build process of the Search UI
+
+
+2. **Environment Variables**
+
+- Create a `.env` file inside the `search-ui` directory with the following environment variables:
+     - `REACT_APP_ELASTICSEARCH_USERNAME`: The username for Elasticsearch.
+     - `REACT_APP_ELASTICSEARCH_PASSWORD`: The password for Elasticsearch.
+     - `REACT_APP_ELASTICSEARCH_HOST`: The Elasticsearch host URL.
+
+   A sample `.env.example` file has been provided for reference.
+
+3. **Build and Run the Container**:
+   From the root of the `search-ui` directory, run the following command to build and start the Search UI application:
+   ```bash
+   docker-compose up --build -d
+   ```
+   This will build the React application using the Dockerfile and serve it on `http://localhost:3000/`.
+
+4. **Accessing the Search UI**
+
+   After the build process completes and the container is running, open a web browser and navigate to `http://localhost:3000/` to access the Search UI. Use the SearchBox to perform searches, and filter results by age, gender, and accent.
+
