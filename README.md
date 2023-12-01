@@ -128,6 +128,57 @@ Notes:
 - After spinning up the Docker container, it takes about a minute to download the model and processor before the app is ready for transcription requests.
 - The app creates a copy of the uploaded file in a temporary location on your server and then deletes that copy after processing. This ensures that no residual data remains on the server after the file is processed, ensuring data privacy and server resource management.
 
+## Task 3
+
+### 1. Deployment Diagram Explanation
+
+The diagram illustrates the deployment setup within a Virtual Private Cloud (VPC).
+
+![architecture design](deployment-design/design.png)
+
+**Networking**
+
+The VPC is segmented into public and private subnets.  The SearchUI is placed in the public subnet, making it accessible over the internet via an Internet Gateway which facilitates web traffic. The Elasticsearch backend nodes are securely positioned within the private subnet, which restricts direct access from the internet.
+
+**Reverse Proxy**
+
+A Reverse Proxy is co-located with the SearchUI on the same EC2 instance within the public subnet. It serves as an intermediary for requests from clients seeking resources from the Elasticsearch backend. The reverse proxy accepts HTTP requests on port 80 and forwards them to the Elasticsearch nodes on port 9200. This setup abstracts the backend services from direct internet exposure, adding a layer of security by limiting direct public access to the Elasticsearch nodes.
+
+**Security Groups and NACLs**
+
+Security groups act as virtual firewalls for the services, controlling inbound and outbound traffic at the instance level. Network Access Control Lists (NACLs) provide a secondary layer of security at the subnet level.
+
+Security Group for Search UI:
+- Inbound Rules:
+  - SSH (Port 22): For secure shell access, restricted to specific IP addresses for management purposes.
+  - HTTP (Port 80): To accept web traffic to the SearchUI.
+
+- Outbound Rules:
+  - Custom TCP (Port 9200): To communicate with the Elasticsearch backend for query processing.
+
+Security Group for Elasticsearch Backend Nodes:
+
+- Inbound Rules:
+  - SSH (Port 22): Restricted to the bastion host or specific IP addresses for secure management access.
+  - Elasticsearch HTTP (Port 9200): Limited to the security group ID of the Search UI & Reverse Proxy instance to handle search queries.
+  - Elasticsearch Node Communication (Ports 9300-9400): Restricted to the security group ID of the Elasticsearch nodes themselves to facilitate cluster node-to-node communication and discovery.
+
+- Outbound Rules:
+  - All traffic (All Ports): To any destination within the VPC CIDR range. This ensures that the nodes can communicate with other services within the VPC as necessary, including responses back to the Search UI & Reverse Proxy.
+
+### 2. Design Considerations
+
+- **EC2 Instances:** Following the task's instructions, we have manually provisioned EC2 instances. This approach provides us with granular control over the environment configuration, albeit with more operational overhead compared to using managed services.
+
+- **HTTP Protocol:** The current setup uses HTTP for simplicity and to focus on core functionality. For a production deployment, enforcing HTTPS with SSL/TLS certificates is critical to ensure data integrity and confidentiality.
+
+### 3. Future Improvements
+
+- **Transition to HTTPS:** Implement SSL/TLS to encrypt and secure all traffic.
+- **Autoscaling:** Introduce autoscaling for the SearchUI to handle variable load efficiently.
+- **High Availability:** Deploy Elasticsearch nodes across multiple availability zones to enhance fault tolerance.
+- **Monitoring and Alerting:** Implement a monitoring solution to oversee system performance and set up alerts for anomaly detection.
+
 ## Task 4
 
 This section outlines the implementation details of an Elasticsearch cluster, as per the provided task instructions.
@@ -293,3 +344,12 @@ To set up the Node.js environment, follow these steps:
 
    After the build process completes and the container is running, open a web browser and navigate to `http://localhost:3000/` to access the Search UI. Use the SearchBox to perform searches, and filter results by age, gender, and accent.
 
+## Task 6 / 7
+
+Please access the deployment URL [here](http://ec2-18-143-129-86.ap-southeast-1.compute.amazonaws.com/).
+
+You may also copy and paste the link directly into the browser: http://ec2-18-143-129-86.ap-southeast-1.compute.amazonaws.com/
+
+## Task 8
+
+essay.pdf has been saved in the main repository.
