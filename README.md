@@ -308,6 +308,40 @@ This section describes how to set up the Search UI for the Elasticsearch service
   - `package-lock.json:` Automatically generated file to lock down the versions of a package's dependencies.
   - `package.json:` Defines the project dependencies and metadata.
 
+#### Search-UI Service Setup
+
+1. **Prerequisites**
+
+- Docker and Docker Compose are installed on your system
+- The Elasticsearch service is running and accessible at `http://localhost:9200/`
+- Data has been indexed using the 'cv-index.py' script
+
+
+2. **Environment Variables**
+
+- Create a `.env` file inside the `search-ui` directory with the following environment variables:
+     - `REACT_APP_ELASTICSEARCH_USERNAME`: The username for Elasticsearch.
+     - `REACT_APP_ELASTICSEARCH_PASSWORD`: The password for Elasticsearch.
+     - `REACT_APP_ELASTICSEARCH_HOST`: The Elasticsearch host URL.
+
+   A sample `.env.example` file has been provided for reference.
+
+3. **Build and Run the Container**:
+
+   From the root of the `search-ui` directory, run the following command to build and start the Search UI application:
+   ```bash
+   docker-compose up --build -d
+   ```
+   This will build the React application using the Dockerfile and serve it on `http://localhost:3000/`.
+
+4. **Accessing the Search UI**
+
+   After the build process completes and the container is running, open a web browser and navigate to `http://localhost:3000/` to access the Search UI. Use the SearchBox to perform searches, and filter results by age, gender, and accent.
+
+5. **Optional**
+
+While there's no need to set up a Node.js environment on a local machine since the React app can be run using Docker Compose, instructions are included in case the user requires it.
+
 **Node.js Environment Setup**
 
 To set up the Node.js environment, follow these steps:
@@ -332,36 +366,6 @@ To set up the Node.js environment, follow these steps:
    ```
    This will read the package.json file and install all the required packages listed under dependencies and devDependencies.
 
-#### Search-UI Service Setup
-
-1. **Prerequisites**
-
-- Docker and Docker Compose are installed on your system
-- The Elasticsearch service is running and accessible at `http://localhost:9200/`
-- Data has been indexed using the 'cv-index.py' script
-- Node.js environment for running the build process of the Search UI
-
-
-2. **Environment Variables**
-
-- Create a `.env` file inside the `search-ui` directory with the following environment variables:
-     - `REACT_APP_ELASTICSEARCH_USERNAME`: The username for Elasticsearch.
-     - `REACT_APP_ELASTICSEARCH_PASSWORD`: The password for Elasticsearch.
-     - `REACT_APP_ELASTICSEARCH_HOST`: The Elasticsearch host URL.
-
-   A sample `.env.example` file has been provided for reference.
-
-3. **Build and Run the Container**:
-
-   From the root of the `search-ui` directory, run the following command to build and start the Search UI application:
-   ```bash
-   docker-compose up --build -d
-   ```
-   This will build the React application using the Dockerfile and serve it on `http://localhost:3000/`.
-
-4. **Accessing the Search UI**
-
-   After the build process completes and the container is running, open a web browser and navigate to `http://localhost:3000/` to access the Search UI. Use the SearchBox to perform searches, and filter results by age, gender, and accent.
 
 ## Task 6 / 7
 
