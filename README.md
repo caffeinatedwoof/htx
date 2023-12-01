@@ -317,6 +317,7 @@ To set up the Node.js environment, follow these steps:
    - npm is included with Node.js, so you'll have it once Node.js is installed.
 
 2. **Verify Installation**:
+
    Verify that Node.js and npm are installed by running the following commands in your terminal:
    ```bash
    node --version
@@ -324,6 +325,7 @@ To set up the Node.js environment, follow these steps:
    ```
 
 3. **Install Project Dependencies**
+
    Navigate to the search-ui directory and run the following command to install all the necessary dependencies:
    ```bash
    npm install
@@ -350,6 +352,7 @@ To set up the Node.js environment, follow these steps:
    A sample `.env.example` file has been provided for reference.
 
 3. **Build and Run the Container**:
+
    From the root of the `search-ui` directory, run the following command to build and start the Search UI application:
    ```bash
    docker-compose up --build -d
