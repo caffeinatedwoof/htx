@@ -7,7 +7,7 @@ import socket
 
 # third party imports
 from elasticsearch import Elasticsearch, helpers
-import load_dotenv
+from dotenv import load_dotenv
 import pandas as pd
 
 # Set up logging
