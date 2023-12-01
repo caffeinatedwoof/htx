@@ -7,34 +7,19 @@ import socket
 
 # third party imports
 from elasticsearch import Elasticsearch, helpers
-import boto3
+import load_dotenv
 import pandas as pd
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-# Load environment variables and configurations
-# Fallback to .env file for local deployment
-if not os.getenv("ELASTIC_PASSWORD") or not os.getenv("HOST"):
-    from dotenv import load_dotenv
-
-    # Load environment variables from .env file
-    load_dotenv()
+# Load environment variables from .env file
+load_dotenv()
 
 password = os.getenv("ELASTIC_PASSWORD")
 host = os.getenv("HOST")
-
-# For local deployment, FILEPATH will be used
-# For cloud deployment, BUCKET_NAME and FILE_KEY will be used
 filepath = os.getenv("FILEPATH")
-bucket_name = os.getenv("BUCKET_NAME")
-file_key = os.getenv("FILE_KEY")
-
-# Check if required configurations are available
-if not all([password, host, filepath or (bucket_name and file_key)]):
-    logger.error("Required configurations are missing")
-    exit(1)  # Exit if configurations are incomplete
 
 
 def log_dns_resolution(host: str) -> NoReturn:
@@ -56,33 +41,6 @@ def log_dns_resolution(host: str) -> NoReturn:
         logger.info(f"DNS resolution successful: {ip_addresses}")
     except socket.gaierror as e:
         logger.error(f"DNS resolution failed for {host}: {e}")
-
-
-# Function to read data from S3
-def read_csv_from_s3(bucket: str, key: str) -> pd.DataFrame:
-    """
-    Reads a CSV file from an AWS S3 bucket and returns it as a pandas DataFrame.
-
-    This function takes the name of an S3 bucket and a key (the path to the file within the bucket),
-    uses the boto3 library to fetch the CSV file, and then converts it into a pandas DataFrame.
-
-    Args:
-        bucket (str): The name of the S3 bucket.
-        key (str): The key (path) of the CSV file within the bucket.
-
-    Returns:
-        pd.DataFrame: A pandas DataFrame containing the data from the CSV file.
-
-    Raises:
-        botocore.exceptions.NoCredentialsError: If credentials are not available or incorrect.
-        botocore.exceptions.ClientError: If there is an error in fetching the object from S3.
-        ValueError: If the CSV file cannot be decoded or parsed.
-    """
-    s3_client = boto3.client("s3")
-    csv_obj = s3_client.get_object(Bucket=bucket, Key=key)
-    body = csv_obj["Body"]
-    csv_string = body.read().decode("utf-8")
-    return pd.read_csv(StringIO(csv_string))
 
 
 def generate_data(df: pd.DataFrame) -> Iterator[Dict[str, Any]]:
@@ -125,10 +83,6 @@ def main():
     # Read CSV data from the appropriate source
     if filepath:  # If FILEPATH is provided, use it as the local path to the CSV.
         df = pd.read_csv(filepath)
-    elif (
-        bucket_name and file_key
-    ):  # If BUCKET_NAME and FILE_KEY are provided, fetch the CSV from S3.
-        df = read_csv_from_s3(bucket_name, file_key)
     else:
         raise ValueError("No valid source for CSV data provided.")
 
