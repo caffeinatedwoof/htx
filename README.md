@@ -242,9 +242,14 @@ Note: For the purpose of this technical test, a sample `.env` file is included i
    docker-compose ps
    ```
 
+   To check the health of the cluster:
+   ```bash
+   curl -X GET "http://localhost:9200/_cluster/health"
+   ```
+
 5. **Access Elasticsearch**
 
-   Access the Elasticsearch service by visiting http://localhost:<ES_PORT>, where <ES_PORT> is the port number specified in your .env file.
+   Access the Elasticsearch service by visiting http://localhost:9200 (or the port number specified for <ES_PORT> in your .env file.)
 
 6. **Stopping the Service**
 
@@ -272,6 +277,17 @@ Note: For the purpose of this technical test, a sample `.env` file is included i
    python cv-index.py
    ```
    This command will start the process of reading the cs-valid-dev.csv file and indexing its content into the Elasticsearch service.
+
+5. **Check Results**
+   To view the list of indices:
+   ```bash
+   curl -X GET "http://localhost:9200/_cat/indices"
+   ```
+   To make a search request:
+   ```bash
+   curl -X GET "http://localhost:9200/cv-transcriptions/_search?q=generated_text:test"
+   ```
+   Replace 'test' at the end with any word you wish to search for.
 
 ## Task 5
 
